@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:14
+    restart: always
+    env_file: .env                # POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  scraper:
+    environment:
+      FIRST_RUN: "yes"
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app                    # гаряча перезбірка коду без ребілду образу
+    # Нічого не запускаємо автоматично. Команди — тільки вручну.
+    entrypoint: ["bash", "-c", "sleep infinity"]
+
+volumes:
+  pgdata:
+

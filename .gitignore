@@ -1,0 +1,6 @@
+.env
+*.log
+ft_scraper/rich.log
+
+ft_scraper/data/
+*.json
