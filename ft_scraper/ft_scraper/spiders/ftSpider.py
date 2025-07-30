@@ -18,7 +18,7 @@ class FtSpider(scrapy.Spider):
 
         first_run = os.getenv("FIRST_RUN", "no").lower() in {"yes", "true", "1"}
         if first_run:
-            self.anchor = datetime.now(timezone.utc) - timedelta(days=5)
+            self.anchor = datetime.now(timezone.utc) - timedelta(days=30)
         else:
             self.anchor = datetime.now(timezone.utc) - timedelta(hours=1)
 
@@ -110,9 +110,9 @@ class FtSpider(scrapy.Spider):
                 return []
 
             related_articles = [
-                f"https://www.ft.com/content/{item_id}"
+                f"https://www.ft.com/content/{item.get('id')}"
                 for item_id in items
-                if item_id
+                if item.get('id')
             ]
 
             self.logger.info("Found %d related articles for %s", len(related_articles), article_id)
